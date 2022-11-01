@@ -1,48 +1,57 @@
 import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
-import axios from "axios";
+import contactService from "./services/contacts";
 
 const App = () => {
-
-  // axios.get('http://localhost:3001/persons') .then(response => {
-  //     console.log(response.data)
-  //   })
-
-  // const [persons, setPersons] = useState([
-  //   { name: "Arto Hellas", number: "040-123456", id: 1 },
-  //   { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-  //   { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-  //   { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  // ]);
-
-  const [persons, setPersons] = useState([])
+  const [contacts, setContacts] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNum, setNewNum] = useState("");
   const [newSearch, setNewSearch] = useState("");
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => setPersons(response.data))
-  }, [])
+    contactService.getAll().then((initialContacts) => {
+      setContacts(initialContacts);
+    });
+  }, []);
 
-  const addPerson = (event) => {
+  const addContact = (event) => {
     event.preventDefault();
-    if (!persons.some((element) => element.name === newName)) {
-      const personObject = {
+    const oldContact = contacts.find((contact) => contact.name === newName);
+    if (oldContact === undefined) {
+      const contactObject = {
         name: newName,
         number: newNum,
-        id: persons.length + 1,
+        id: contacts.length + 1,
       };
-      setPersons(persons.concat(personObject));
-      setNewName("");
+      setContacts(contacts.concat(contactObject));
+      contactService.create(contactObject).then((response) => {
+        console.log(response);
+      });
     } else {
-      alert(`${newName} already in phone book`);
+      if (
+        window.confirm(
+          `${oldContact.name} is already added to phonebook, \
+replace the old number with a new one?`
+        )
+      ) {
+        const contactObject = { ...oldContact, number: newNum };
+        contactService
+          .update(oldContact.id, contactObject)
+          .then(
+            setContacts(
+              contacts.map((contact) =>
+                contact === oldContact ? contactObject : contact
+              )
+            )
+          );
+      }
     }
+    setNewName("");
+    setNewNum("");
   };
 
-  const handlePersonChange = (event) => {
+  const handleContactChange = (event) => {
     setNewName(event.target.value);
   };
 
@@ -60,14 +69,14 @@ const App = () => {
       Search:{" "}
       <input value={newSearch} type="text" onChange={handleSearchChange} />
       <Form
-        addPerson={addPerson}
+        addContact={addContact}
         newName={newName}
-        handlePersonChange={handlePersonChange}
+        handleContactChange={handleContactChange}
         newNum={newNum}
         handleNumChange={handleNumChange}
       />
       <h2>Numbers</h2>
-      <Filter persons={persons} newSearch={newSearch} />
+      <Filter contacts={contacts} newSearch={newSearch} setContacts={setContacts} />
     </div>
   );
 };
