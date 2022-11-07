@@ -25,15 +25,26 @@ const App = () => {
       const contactObject = {
         name: newName,
         number: newNum,
-        id: contacts.length + 1,
       };
-      setContacts(contacts.concat(contactObject));
-      contactService.create(contactObject).then(() => {
-        setErrorMessage(`${contactObject.name} added`);
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 3000);
-      });
+      // setContacts(contacts.concat(contactObject));
+      contactService
+        .create(contactObject)
+        .then((retObj) => {
+          setContacts(contacts.concat(retObj.data));
+          setIsError(false);
+          setErrorMessage(`${contactObject.name} added`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
+        })
+        .catch((error) => {
+          console.log("in addContact", error);
+          setIsError(true);
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
+        });
     } else {
       if (
         window.confirm(
@@ -42,22 +53,31 @@ replace the old number with a new one?`
         )
       ) {
         const contactObject = { ...oldContact, number: newNum };
-        contactService.update(oldContact.id, contactObject).then(() => {
-          setContacts(
-            contacts.map((contact) =>
-              contact === oldContact ? contactObject : contact
-            )
-          );
-          setErrorMessage(`${contactObject.name} updated`);
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 3000);
-        });
+        contactService
+          .update(oldContact.id, contactObject)
+          .then(() => {
+            setContacts(
+              contacts.map((contact) =>
+                contact === oldContact ? contactObject : contact
+              )
+            );
+            setErrorMessage(`${contactObject.name} updated`);
+            setIsError(false);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+          })
+          .catch((error) => {
+            setIsError(true);
+            setErrorMessage(error.response.data.error);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+          });
       }
     }
     setNewName("");
     setNewNum("");
-    setIsError(false);
   };
 
   const handleContactChange = (event) => {

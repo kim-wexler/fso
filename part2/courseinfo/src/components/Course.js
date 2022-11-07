@@ -19,7 +19,6 @@ const Course = ({course}) => {
         return <Part key={part.id} part={part} />
       }
       )}
-      {/* <b>total of {total} exercises</b> */}
       <Total sum={total} />
     </div>
   )

@@ -9,7 +9,9 @@ const deleteContact = (
   setIsError
 ) => {
   if (window.confirm(`Delete ${contact.name}?`)) {
-    const url = `http://localhost:3001/persons/${contact.id}`;
+    // const url = `http://localhost:3001/persons/${contact.id}`;
+    // const url = `http://localhost:3001/api/persons/${contact.id}`;
+    const url = `/api/persons/${contact.id}`;
     axios
       .delete(url)
       .then(
