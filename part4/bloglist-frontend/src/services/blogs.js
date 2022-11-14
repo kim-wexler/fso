@@ -12,4 +12,15 @@ const create = async (newBlog, token) => {
   return request;
 };
 
-export default { getAll, create };
+const update = async (id, updatedObj) => {
+  const response = await axios.put(`${baseUrl}/${id}`, updatedObj);
+  return response;
+};
+
+const remove = async (id, token) => {
+  const cfg = { headers: { Authorization: `bearer ${token}` } };
+  const response = await axios.delete(`${baseUrl}/${id}`, cfg);
+  return response.data;
+};
+
+export default { getAll, create, update, remove };

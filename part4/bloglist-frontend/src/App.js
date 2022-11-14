@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/newBlogForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -11,10 +12,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -47,24 +44,38 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      notify("Wrong credentials");
+      notify("Wrong credentials", "error");
     }
   };
 
-  const handleNewBlog = async (event) => {
-    event.preventDefault();
-    const newBlog = { author, title, url };
+  const addBlog = async (blog) => {
     await blogService
-      .create(newBlog, user.token)
+      .create(blog, user.token)
       .then((retObj) => {
         setBlogs(blogs.concat(retObj.data));
       })
       .catch((error) => {
         notify(error.message, "error");
       });
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+  };
+
+  const removeBlog = async (id) => {
+    const res = await blogService.remove(id, user.token);
+    setBlogs(blogs.filter((blog) => blog.id !== id));
+    return res;
+  };
+
+  const updateBlog = async (id, updatedBlog) => {
+    const response = await blogService.update(id, updatedBlog);
+
+    const blogToUpdate = response.data;
+    setBlogs(
+      blogs.map((blog) =>
+        blog.id === blogToUpdate.id
+          ? { ...blogToUpdate, user: blog.user }
+          : blog
+      )
+    );
   };
 
   if (user === null) {
@@ -82,7 +93,7 @@ const App = () => {
     );
   } else {
     return (
-      <div style={{display: ""}}>
+      <div style={{ display: "" }}>
         <h1>blogs</h1>
         <Notification notification={notification} />
         <div>
@@ -97,21 +108,26 @@ const App = () => {
           </button>
         </div>
         <h2>create new</h2>
-        <NewBlogForm
-          handleNewBlog={handleNewBlog}
-          title={title}
-          setTitle={setTitle}
-          author={author}
-          setAuthor={setAuthor}
-          url={url}
-          setUrl={setUrl}
-        />
+        <Togglable buttonLabel="new blog">
+          <NewBlogForm addBlog={addBlog} />
+        </Togglable>
         <br></br>
-        {blogs.map((blog) => {
-          if (blog.user.username === user.username) {
-            return <Blog key={blog.id} blog={blog} />;
-          }
-        })}
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => {
+            if (blog.user.username === user.username) {
+              return (
+                <div>
+                  <Blog
+                    key={blog.id}
+                    blog={blog}
+                    updateBlog={updateBlog}
+                    removeBlog={removeBlog}
+                  />
+                </div>
+              );
+            }
+          })}
       </div>
     );
   }
