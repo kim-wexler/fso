@@ -17,8 +17,7 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
   };
 
   const handleRemove = (blog) => {
-    if (window.confirm(`Remove ${blog.title}?`))
-    removeBlog(blog.id);
+    if (window.confirm(`Remove ${blog.title}?`)) removeBlog(blog.id);
   };
 
   const blogStyle = {
@@ -33,19 +32,18 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     return (
       <div style={blogStyle}>
         {blog.title} {blog.author}
-        <button onClick={() => setVisible(!visible)}>show</button>
+        <button onClick={() => setVisible(!visible)} id="showButton">show</button>
       </div>
     );
   } else {
     return (
       <div style={blogStyle}>
-        {blog.title}
+        {blog.title} {blog.author}
         <button onClick={() => setVisible(!visible)}>hide</button>
         <ul>
-          {/* <li>{blog.author}</li> */}
           <li>
             {blog.likes}{" "}
-            <button onClick={() => handleLikeButton(blog)}>like</button>
+            <button onClick={() => handleLikeButton(blog)} id="likeButton">like</button>
           </li>
           <li>{blog.url}</li>
         </ul>

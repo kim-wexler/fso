@@ -22,6 +22,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
+      console.log("from app: ", user.token)
       setUser(user);
     }
   }, []);
