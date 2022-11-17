@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import anecdoteReducer from "./reducers/anecdoteReducer";
+import anecdoteReducer, { setAnecdotes } from "./reducers/anecdoteReducer";
 import notificationReducer from "./reducers/notificationReducer";
 import filterReducer from "./reducers/filterReducer";
 
@@ -20,7 +20,5 @@ const reducer = combineReducers({
 const store = configureStore({
   reducer: reducer,
 });
-
-console.log(store.getState());
 
 export default store;
