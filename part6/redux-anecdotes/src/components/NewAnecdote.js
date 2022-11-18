@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { createAnecdote } from "../reducers/anecdoteReducer";
 
 const NewAnecdote = () => {
@@ -24,4 +24,7 @@ const NewAnecdote = () => {
   );
 };
 
-export default NewAnecdote;
+const connectedNewAnecdote = connect()(NewAnecdote)
+
+// export default NewAnecdote;
+export default connectedNewAnecdote;
