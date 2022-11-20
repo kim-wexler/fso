@@ -1,13 +1,11 @@
 import { useState } from "react";
-import blogService from "../services/blogs";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { updateBlog, removeBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, updateBlog, removeBlog }) => {
+const NewBlog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
 
-  // const blogs_ = useSelector((state) => state.blogs);
-  // console.log("blogs:", blogs_);
-  // console.log("in blog");
+  const dispatch = useDispatch();
 
   const handleLikeButton = (blog) => {
     // console.log(blog)
@@ -20,11 +18,11 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     };
     // await blogService.update(blog.id, updatedBlog);
     // updateBlog(blog.id, updatedBlog);
-    updateBlog(updatedBlog);
+    dispatch(updateBlog(updatedBlog));
   };
 
   const handleRemove = (blog) => {
-    if (window.confirm(`Remove ${blog.title}?`)) removeBlog(blog.id);
+    if (window.confirm(`Remove ${blog.title}?`)) dispatch(removeBlog(blog, user));
   };
 
   const blogStyle = {
@@ -64,4 +62,4 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
   }
 };
 
-export default Blog;
+export default NewBlog;

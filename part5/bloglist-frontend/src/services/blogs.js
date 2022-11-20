@@ -12,8 +12,9 @@ const create = async (newBlog, token) => {
   return request;
 };
 
-const update = async (id, updatedObj) => {
-  const response = await axios.put(`${baseUrl}/${id}`, updatedObj);
+// const update = async (id, updatedObj) => {
+const update = async (updatedObj) => {
+  const response = await axios.put(`${baseUrl}/${updatedObj.id}`, updatedObj);
   return response;
 };
 
